@@ -3,8 +3,8 @@ using EnergyAnalyzer;
 using EnergyAnalyzer.DataManagers;
 using EnergyAnalyzer.DataManagers.Interfaces;
 using EnergyAnalyzer.Handlers;
-using EnergyAnalyzer.OptionsManagers.Interfaces;
 using EnergyAnalyzer.OptionsManagers.Managers;
+using EnergyAnalyzer.OptionsManagers.Service;
 using System.Globalization;
 
 IHost host = Host.CreateDefaultBuilder(args)
@@ -24,19 +24,20 @@ static void ConfugureServices(IServiceCollection services)
     //Add Main Application
     services.AddHostedService<Worker>();
 
-    //Add Parser
+    //Add Worker Componets
     services.AddSingleton(x => new Parser(ConfigureParser));
+    services.AddSingleton<OptionsManagerService>();
+
+    //Add Options Managers
+    services.AddTransient<AddOptionsManager>();
+    services.AddTransient<DeleteOptionsManager>();
+    services.AddTransient<ShowOptionsManager>();
 
     //Add Data Manager
     services.AddSingleton<IDataManager, FileCSVDataManager>(x => new FileCSVDataManager(@"C:\ProgramData\EnergyAnalyzer\CSV"));
     services.AddSingleton<IWriter>(x => x.GetRequiredService<IDataManager>());
     services.AddSingleton<IDeleter>(x => x.GetRequiredService<IDataManager>());
     services.AddSingleton<IReader>(x => x.GetRequiredService<IDataManager>());
-
-    //Add Options Managers
-    services.AddSingleton<IOptionsManager, AddOptionsManager>();
-    services.AddSingleton<IOptionsManager, DeleteOptionsManager>();
-    services.AddSingleton<IOptionsManager, ShowOptionsManager>();
 
     //Add Handlers
     services.AddSingleton<ConsoleHandler>();

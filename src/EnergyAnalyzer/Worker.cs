@@ -1,7 +1,7 @@
 using CommandLine;
 using EnergyAnalyzer.Extensions;
 using EnergyAnalyzer.Models.Options;
-using EnergyAnalyzer.OptionsManagers.Interfaces;
+using EnergyAnalyzer.OptionsManagers.Service;
 
 namespace EnergyAnalyzer
 {
@@ -10,20 +10,20 @@ namespace EnergyAnalyzer
         private readonly ILogger<Worker> _logger;
         private readonly IHost _host;
         private readonly Parser _parser;
+        private readonly OptionsManagerService _optionsManagerService;
 
-        private readonly Dictionary<Type, Func<IOptions, Task>> _actions = new();
-
-        public Worker(ILogger<Worker> logger, IHost host, Parser parser, IEnumerable<IOptionsManager> optionsManagers)
+        public Worker(ILogger<Worker> logger, IHost host, Parser parser, OptionsManagerService optionsManagerService)
         {
             _logger = logger;
             _host = host;
             _parser = parser;
-
-            InitializeActions(optionsManagers);
+            _optionsManagerService = optionsManagerService;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var types = _optionsManagerService.GetAllTypesIOptions();
+
             while (true)
             {
                 Console.Write(">");
@@ -36,7 +36,7 @@ namespace EnergyAnalyzer
 
                 var args = line.CommandLineToArgs();
 
-                await _parser.ParseArguments(args, _actions.Select(x => x.Key).ToArray())
+                await _parser.ParseArguments(args, types.ToArray())
                              .MapResult(
                                 async (IOptions options) => await RunOption(options),
                                 HandleParseError
@@ -46,22 +46,12 @@ namespace EnergyAnalyzer
             await _host.StopAsync(stoppingToken);
         }
 
-        private void InitializeActions(IEnumerable<IOptionsManager> optionsManagers)
-        {
-            foreach (var optionsManager in optionsManagers)
-            {
-                var type = optionsManager.GetOptionsType();
-                var action = new Func<IOptions, Task>(x => optionsManager.ExecuteAsync(x));
-                _actions.Add(type, action);
-            }
-        }
-
         private async Task<int> RunOption(IOptions options)
         {
             try
             {
-                var action = _actions.First(x => x.Key == options.GetType());
-                await action.Value(options);
+                var optionsManager = _optionsManagerService.CreateOptionsManager(options);
+                await optionsManager.ExecuteAsync(options);
             }
             catch(Exception ex)
             {
@@ -73,7 +63,7 @@ namespace EnergyAnalyzer
             return 0;
         }
 
-        static async Task<int> HandleParseError(IEnumerable<Error> errs)
+        private async Task<int> HandleParseError(IEnumerable<Error> errs)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             foreach (var err in errs)
