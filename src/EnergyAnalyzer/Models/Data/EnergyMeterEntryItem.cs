@@ -2,6 +2,7 @@
 
 namespace EnergyAnalyzer.Models.Data
 {
+    [Serializable]
     internal class EnergyMeterEntryItem : Item
     {
         [ItemProperty]

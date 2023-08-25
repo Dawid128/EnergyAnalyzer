@@ -1,6 +1,7 @@
 using CommandLine;
 using EnergyAnalyzer;
-using EnergyAnalyzer.DataManagers;
+using EnergyAnalyzer.Database;
+using EnergyAnalyzer.DataManagers.Database;
 using EnergyAnalyzer.DataManagers.Interfaces;
 using EnergyAnalyzer.Handlers;
 using EnergyAnalyzer.OptionsManagers.Managers;
@@ -34,10 +35,12 @@ static void ConfugureServices(IServiceCollection services)
     services.AddTransient<ShowOptionsManager>();
 
     //Add Data Manager
-    services.AddSingleton<IDataManager, FileCSVDataManager>(x => new FileCSVDataManager(@"C:\ProgramData\EnergyAnalyzer\CSV"));
-    services.AddSingleton<IWriter>(x => x.GetRequiredService<IDataManager>());
-    services.AddSingleton<IDeleter>(x => x.GetRequiredService<IDataManager>());
-    services.AddSingleton<IReader>(x => x.GetRequiredService<IDataManager>());
+    services.AddSingleton<IWriter, DatabaseWriter>();
+    services.AddSingleton<IDeleter, DatabaseDeleter>();
+    services.AddSingleton<IReader, DatabaseReader>();
+
+    //Add Database Context
+    services.AddTransient<DatabaseContext>();
 
     //Add Handlers
     services.AddSingleton<ConsoleHandler>();

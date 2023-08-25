@@ -1,9 +1,10 @@
-﻿using EnergyAnalyzer.Models.Data;
+﻿using EnergyAnalyzer.Database;
+using EnergyAnalyzer.Models.Data;
 
 namespace EnergyAnalyzer.DataManagers.Interfaces
 {
     internal interface IWriter
     {
-        Task Write(EnergyMeterEntryItem value);
+        Task CreateAsync<T>(DatabaseContext context, T value) where T : Item, new();
     }
 }

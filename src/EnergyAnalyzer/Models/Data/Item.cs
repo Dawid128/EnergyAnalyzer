@@ -3,6 +3,7 @@ using EnergyAnalyzer.Models.Attributes;
 
 namespace EnergyAnalyzer.Models.Data
 {
+    [Serializable]
     internal abstract class Item
     {
         [Key]
