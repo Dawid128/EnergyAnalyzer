@@ -7,20 +7,30 @@ using EnergyAnalyzer.Handlers;
 using EnergyAnalyzer.OptionsManagers.Managers;
 using EnergyAnalyzer.OptionsManagers.Service;
 using System.Globalization;
+using EnergyAnalyzer.Monitor;
 
 IHost host = Host.CreateDefaultBuilder(args)
+                 .ConfigureAppConfiguration(ConfigureAppConfiguration)
                  .ConfigureLogging(ConfigureLogging)
                  .ConfigureServices(ConfugureServices)
                  .Build();
 
 host.Run();
 
+static void ConfigureAppConfiguration(IConfigurationBuilder builder)
+{
+    builder.SetBasePath(Directory.GetCurrentDirectory());
+    builder.AddJsonFile("appsettings.json", false);
+    builder.Build();
+}
+
 static void ConfigureLogging(ILoggingBuilder loggingBuilder)
 {
     loggingBuilder.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.None);
 }
 
-static void ConfugureServices(IServiceCollection services)
+//Split all add as separate group. 
+static void ConfugureServices(HostBuilderContext builder, IServiceCollection services)
 {
     //Add Main Application
     services.AddHostedService<Worker>();
@@ -44,13 +54,18 @@ static void ConfugureServices(IServiceCollection services)
 
     //Add Handlers
     services.AddSingleton<ConsoleHandler>();
+
+    //Add Monitor
+    var service = builder.Configuration.GetSection("Monitor").GetValue<string>("Service");
+    if (service == "Sentry")
+        services.AddSingleton<IMonitorService, SentryMonitorService>();
 }
 
 static void ConfigureParser(ParserSettings settings)
 {
     settings.ParsingCulture = new CultureInfo("pl-pl");
     settings.HelpWriter = Console.Error;
-    settings.AutoHelp = true;
+    settings.AutoHelp = true;   
     settings.AutoVersion = true;
     settings.CaseInsensitiveEnumValues = true;
     settings.CaseSensitive = true;
