@@ -3,18 +3,21 @@ using EnergyAnalyzer.DataManagers.Interfaces;
 using EnergyAnalyzer.Exceptions;
 using EnergyAnalyzer.Models.Data;
 using EnergyAnalyzer.Models.Options;
+using EnergyAnalyzer.Monitor;
 using EnergyAnalyzer.OptionsManagers.Interfaces;
 
 namespace EnergyAnalyzer.OptionsManagers.Managers
 {
     internal class DeleteOptionsManager : IOptionsManager, IDisposable
     {
+        private readonly IMonitorService _monitorService;
         private readonly DatabaseContext _context;
         private readonly IReader _reader;
         private readonly IDeleter _deleter;
 
-        public DeleteOptionsManager(IReader reader, IDeleter deleter, DatabaseContext context)
+        public DeleteOptionsManager(IMonitorService monitorService, IReader reader, IDeleter deleter, DatabaseContext context)
         {
+            _monitorService = monitorService;
             _reader = reader;
             _deleter = deleter;
             _context = context;
@@ -22,6 +25,8 @@ namespace EnergyAnalyzer.OptionsManagers.Managers
 
         public async Task ExecuteAsync(IOptions options)
         {
+            using var span = _monitorService.OpenSpan(string.Format(MonitorService.OptionsManagerName, "Delete"), (nameof(options), options));
+
             if (options is not DeleteOptions deleteOptions)
                 throw new ArgumentInvalidTypeException(nameof(options), $"Argument options is not valid type DeleteOptions");
 

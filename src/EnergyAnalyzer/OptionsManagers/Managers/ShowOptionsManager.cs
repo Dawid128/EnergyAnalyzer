@@ -26,7 +26,7 @@ namespace EnergyAnalyzer.OptionsManagers.Managers
 
         public async Task ExecuteAsync(IOptions options)
         {
-            using var span = _monitorService.OpenSpan("Execute Show Options");
+            using var span = _monitorService.OpenSpan(string.Format(MonitorService.OptionsManagerName, "Show"), (nameof(options), options));
 
             if (options is not ShowOptions showOptions)
                 throw new ArgumentInvalidTypeException(nameof(options), $"Argument options is not valid type {nameof(ShowOptions)}");

@@ -1,3 +1,4 @@
+﻿using EnergyAnalyzer.Helpers;
 ﻿using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -10,7 +11,7 @@ namespace EnergyAnalyzer.Monitor
 {
     internal class SentryMonitorService : MonitorService, IMonitorService
     {
-        public SentryMonitorService(IConfiguration configuration) : base(configuration) 
+        public SentryMonitorService(IConfiguration configuration, ReflectionHelper reflectionHelper) : base(configuration, reflectionHelper) 
         { 
 
         }
@@ -53,11 +54,17 @@ namespace EnergyAnalyzer.Monitor
         }
     }
 
-    //internal class StatusTransactionProcessor : ISentryTransactionProcessor
-    //{
-    //    public Transaction? Process(Transaction transaction)
-    //    {
-    //        return transaction;
-    //    }
-    //}
+    //Sentry wspiera Tracing (Transakcja + Spans)
+    //Sentry wspiera Tags 
+    //Sentry wspiera Error jako oddzielne elementy, ale nie łączy tego ze Span
+
+    //Sentry może będzie wspierać załączniki? 
+    //Sentry może odrzucać tracing na podstawie danych (np. status Uknown)
+
+    //Sentry nie wspiera logowania jak Jaeger 
+    //Sentry ma problem z intrumentami ASP .NET Core (Do rozwiązania)? 
+    //Sentry dla .NET oparte na telemetri potrafi mniej niż bez telemetri. 
+    //--Ustawianie Nazwy Transakcji & Operation -> telemetry ustawia taką samą wartość dla Transaction & Operation & Description
+    //--Ustawienie Status -> telemetry wspiera tylko OK & Uknown
+
 }

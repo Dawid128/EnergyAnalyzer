@@ -8,6 +8,7 @@ using EnergyAnalyzer.OptionsManagers.Managers;
 using EnergyAnalyzer.OptionsManagers.Service;
 using System.Globalization;
 using EnergyAnalyzer.Monitor;
+using EnergyAnalyzer.Helpers;
 
 IHost host = Host.CreateDefaultBuilder(args)
                  .ConfigureAppConfiguration(ConfigureAppConfiguration)
@@ -54,6 +55,9 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
 
     //Add Handlers
     services.AddSingleton<ConsoleHandler>();
+
+    //Add Helpers
+    services.AddSingleton<ReflectionHelper>();
 
     //Add Monitor
     var service = builder.Configuration.GetSection("Monitor").GetValue<string>("Service");

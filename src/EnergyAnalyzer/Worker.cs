@@ -26,15 +26,19 @@ namespace EnergyAnalyzer
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             using var span = _monitorService.OpenSpan("Start EnergyAnalyzer");
+            using var span = _monitorService.OpenSpan(MonitorService.StartProgramName);
 
             var types = _optionsManagerService.GetAllTypesIOptions();
-
             while (true)
             {
+                using var subSpan = _monitorService.OpenSpan(MonitorService.InsertCommandName);
+
                 Console.Write(">");
                 var line = Console.ReadLine();
                 if (line is null)
                     continue;
+
+                _monitorService.SetTagArg(subSpan, (nameof(line), line));
 
                 if (line == "stop")
                     break;
@@ -61,8 +65,10 @@ namespace EnergyAnalyzer
             catch(Exception ex)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
+
                 Console.WriteLine(ex.Message);
                 _monitorService.LogException(ex);
+
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
@@ -71,9 +77,11 @@ namespace EnergyAnalyzer
 
         private async Task<int> HandleParseError(IEnumerable<Error> errs)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+
             foreach (var err in errs)
                 Console.WriteLine(err.Tag);
+
             Console.ForegroundColor = ConsoleColor.White;
 
             return 1;
