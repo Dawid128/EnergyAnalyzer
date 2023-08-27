@@ -18,7 +18,8 @@ namespace EnergyAnalyzer.Monitor
 
         protected override void Init()
         {
-            SentrySdk.Init(Configure);
+            SentrySdk.Init(ConfigureSentry);
+            //SentrySdk.ConfigureScope(ConfigureScope);
 
             Sdk.CreateTracerProviderBuilder()
                .AddSource(nameof(MonitorService))
@@ -27,7 +28,7 @@ namespace EnergyAnalyzer.Monitor
                .Build();
         }
 
-        private void Configure(SentryOptions options)
+        private void ConfigureSentry(SentryOptions options)
         {
             options.Dsn = Cofiguration.GetSection("Monitor:SentryOptions").GetValue<string>("Dsn");
             options.Environment = Cofiguration.GetSection("Monitor:SentryOptions").GetValue<string>("Environment");
@@ -46,8 +47,14 @@ namespace EnergyAnalyzer.Monitor
             //options.AddTransactionProcessor(new StatusTransactionProcessor());
         }
 
+        //private void ConfigureScope(Scope scope)
+        //{
+        //    scope.AddAttachment(@"C:\Users\DCz\source\repos\ProjectsDCz\2023\EnergyAnalyzer\src\EnergyAnalyzer\bin\Debug\net7.0\appsettings.json");
+        //}
+
         public override void LogException(Activity? activity, Exception exception)
         {
+            //SentrySdk.CaptureException(exception, scope => scope.AddAttachment(@"C:\Users\DCz\source\repos\ProjectsDCz\2023\EnergyAnalyzer\src\EnergyAnalyzer\bin\Debug\net7.0\appsettings.json"));
             SentrySdk.CaptureException(exception);
 
             base.LogException(activity, exception);
@@ -57,8 +64,8 @@ namespace EnergyAnalyzer.Monitor
     //Sentry wspiera Tracing (Transakcja + Spans)
     //Sentry wspiera Tags 
     //Sentry wspiera Error jako oddzielne elementy, ale nie łączy tego ze Span
+    //Sentry wspiera Załączniki dla Errors & Messages
 
-    //Sentry może będzie wspierać załączniki? 
     //Sentry może odrzucać tracing na podstawie danych (np. status Uknown)
 
     //Sentry nie wspiera logowania jak Jaeger 
