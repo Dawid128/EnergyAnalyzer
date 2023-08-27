@@ -25,7 +25,6 @@ namespace EnergyAnalyzer
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using var span = _monitorService.OpenSpan("Start EnergyAnalyzer");
             using var span = _monitorService.OpenSpan(MonitorService.StartProgramName);
 
             var types = _optionsManagerService.GetAllTypesIOptions();
