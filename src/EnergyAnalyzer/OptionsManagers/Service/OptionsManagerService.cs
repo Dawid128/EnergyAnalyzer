@@ -10,7 +10,7 @@ namespace EnergyAnalyzer.OptionsManagers.Service
 
         public OptionsManagerService(IServiceProvider serviceProvider) 
         {
-            _serviceProvider = serviceProvider; ;
+            _serviceProvider = serviceProvider;
 
             _mapOptionsManagerTypes = GetMapOptionsManagerTypes();
         }

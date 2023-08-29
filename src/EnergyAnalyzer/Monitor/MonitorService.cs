@@ -51,7 +51,6 @@ namespace EnergyAnalyzer.Monitor
         }
 
         public virtual void LogException(Exception exception) => LogException(Activity.Current, exception);
-
         public virtual void LogException(Activity? activity, Exception exception)
         {
             //A może powinienem wymagać NOT NULL ? 
@@ -59,7 +58,23 @@ namespace EnergyAnalyzer.Monitor
                 return;
 
             activity.RecordException(exception);
-            activity.SetStatus(Status.Error.WithDescription(exception.Message));
+            activity.SetStatus(Status.Error);
+        }
+
+        public virtual void LogInfo(string message) => LogInfo(Activity.Current, message);
+        public virtual void LogInfo(Activity? activity, string message)
+        {
+            if (activity is null)
+                return;
+
+            var tags = new Dictionary<string, object?>
+            {
+                { "Time",  DateTime.Now},
+                { "Level", "Information" },
+                { "Message", message }
+            };
+
+            activity.AddEvent(new ActivityEvent("A", DateTime.Now, new ActivityTagsCollection(tags)));
         }
     }
 }

@@ -3,7 +3,6 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Sentry;
-using Sentry.Extensibility;
 using Sentry.OpenTelemetry;
 using System.Diagnostics;
 
@@ -11,15 +10,14 @@ namespace EnergyAnalyzer.Monitor
 {
     internal class SentryMonitorService : MonitorService, IMonitorService
     {
-        public SentryMonitorService(IConfiguration configuration, ReflectionHelper reflectionHelper) : base(configuration, reflectionHelper) 
-        { 
+        public SentryMonitorService(IConfiguration configuration, ReflectionHelper reflectionHelper) : base(configuration, reflectionHelper)
+        {
 
         }
 
         protected override void Init()
         {
             SentrySdk.Init(ConfigureSentry);
-            //SentrySdk.ConfigureScope(ConfigureScope);
 
             Sdk.CreateTracerProviderBuilder()
                .AddSource(nameof(MonitorService))
@@ -44,20 +42,20 @@ namespace EnergyAnalyzer.Monitor
             options.IsGlobalModeEnabled = true;
 
             options.UseOpenTelemetry();
-            //options.AddTransactionProcessor(new StatusTransactionProcessor());
         }
-
-        //private void ConfigureScope(Scope scope)
-        //{
-        //    scope.AddAttachment(@"C:\Users\DCz\source\repos\ProjectsDCz\2023\EnergyAnalyzer\src\EnergyAnalyzer\bin\Debug\net7.0\appsettings.json");
-        //}
 
         public override void LogException(Activity? activity, Exception exception)
         {
-            //SentrySdk.CaptureException(exception, scope => scope.AddAttachment(@"C:\Users\DCz\source\repos\ProjectsDCz\2023\EnergyAnalyzer\src\EnergyAnalyzer\bin\Debug\net7.0\appsettings.json"));
-            SentrySdk.CaptureException(exception);
-
             base.LogException(activity, exception);
+
+            SentrySdk.CaptureException(exception);
+        }
+
+        public override void LogInfo(Activity? activity, string message)
+        {
+            base.LogInfo(activity, message);
+
+            SentrySdk.CaptureMessage(message, SentryLevel.Info);
         }
     }
 
@@ -68,10 +66,17 @@ namespace EnergyAnalyzer.Monitor
 
     //Sentry może odrzucać tracing na podstawie danych (np. status Uknown)
 
+    //Sentry nie wspiera Status in Message -> wyświetlane jest default. 
     //Sentry nie wspiera logowania jak Jaeger 
     //Sentry ma problem z intrumentami ASP .NET Core (Do rozwiązania)? 
     //Sentry dla .NET oparte na telemetri potrafi mniej niż bez telemetri. 
     //--Ustawianie Nazwy Transakcji & Operation -> telemetry ustawia taką samą wartość dla Transaction & Operation & Description
     //--Ustawienie Status -> telemetry wspiera tylko OK & Uknown
 
+    //Istnieje różnica że Jaeger wysyła SPAN w czasie rzeczywistym (możliwa jest utrata SPAN gdy przekroczy rozmiar) 
+    //Natomiast Sentry wysyła gotową transakcje (cała transakcja może zostać utracona jeżeli przekroczy rozmiar)
+
+    //Jaeger wspiera wyświetlanie JSON z formatem, Sentry tego nie wspiera.
+
+    //Jaeger wspiera tagi dla 1 span (root), Sentry traktuje root inaczej.
 }
