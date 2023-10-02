@@ -10,7 +10,8 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="EntityFramework" Version="6.4.4" />
-   <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Sentry" Version="3.36.0" />
     <PackageReference Include="Sentry.OpenTelemetry" Version="3.36.0" />
     <PackageReference Include="Spectre.Console" Version="0.47.0" />

@@ -40,9 +40,10 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
     services.AddSingleton(x => new Parser(ConfigureParser));
     services.AddSingleton<OptionsManagerService>();
 
-    //Add Options Managers
+    //Add Options Managers & Helpers
     services.AddTransient<AddOptionsManager>();
     services.AddTransient<DeleteOptionsManager>();
+    services.AddSingleton<DeleteOptionsHelper>();
     services.AddTransient<ShowOptionsManager>();
 
     //Add Data Manager

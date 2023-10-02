@@ -1,4 +1,5 @@
 ﻿using EnergyAnalyzer.Helpers;
+using Newtonsoft.Json;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
 
@@ -45,9 +46,8 @@ namespace EnergyAnalyzer.Monitor
             if (activity is null)
                 return;
 
-            var metadataVar = ReflectionHelper.GetMetadata(arg.Name, arg.Value);
-            foreach (var item in metadataVar)
-                activity.SetTag($"arg.{item.Key}", item.Value);
+            var valueStr = JsonConvert.SerializeObject(arg.Value, Formatting.Indented);
+            activity.SetTag($"arg.{arg.Name}", valueStr);
         }
 
         public virtual void LogException(Exception exception) => LogException(Activity.Current, exception);
