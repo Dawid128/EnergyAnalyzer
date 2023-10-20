@@ -64,6 +64,8 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
     var service = builder.Configuration.GetSection("Monitor").GetValue<string>("Service");
     if (service == "Sentry")
         services.AddSingleton<IMonitorService, SentryMonitorService>();
+    else
+        services.AddSingleton<IMonitorService, NullMonitorService>();
 }
 
 static void ConfigureParser(ParserSettings settings)
