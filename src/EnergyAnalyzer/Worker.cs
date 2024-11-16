@@ -44,6 +44,8 @@ namespace EnergyAnalyzer
 
                 var args = line.CommandLineToArgs();
 
+                //CommandLine.Text.HelpText.AutoBuild(a);
+
                 await _parser.ParseArguments(args, types.ToArray())
                              .MapResult(
                                 async (IOptions options) => await RunOption(options),

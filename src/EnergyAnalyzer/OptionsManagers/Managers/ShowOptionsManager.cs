@@ -33,7 +33,7 @@ namespace EnergyAnalyzer.OptionsManagers.Managers
 
             var items = await _reader.ReadAllAsync<EnergyMeterEntryItem>(_context);
 
-            _consoleHandler.WriteObjects(items, new[] { "Id", "Date", "Value" });
+            _consoleHandler.WriteObjects(items, new[] { ("Id", null as string), ("Date", null), ("Value", null) });
         }
 
         public Type GetOptionsType() => typeof(ShowOptions);

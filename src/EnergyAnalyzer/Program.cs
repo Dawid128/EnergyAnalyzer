@@ -9,6 +9,7 @@ using EnergyAnalyzer.OptionsManagers.Service;
 using System.Globalization;
 using EnergyAnalyzer.Monitor;
 using EnergyAnalyzer.Helpers;
+using EnergyAnalyzer.Services;
 
 IHost host = Host.CreateDefaultBuilder(args)
                  .ConfigureAppConfiguration(ConfigureAppConfiguration)
@@ -45,6 +46,10 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
     services.AddTransient<DeleteOptionsManager>();
     services.AddSingleton<DeleteOptionsHelper>();
     services.AddTransient<ShowOptionsManager>();
+    services.AddTransient<CreateAnalysisOptionsManager>();
+
+    //Add Analysis Services
+    services.AddSingleton<DailyEnergyConsumptions>();
 
     //Add Data Manager
     services.AddSingleton<IWriter, DatabaseWriter>();
