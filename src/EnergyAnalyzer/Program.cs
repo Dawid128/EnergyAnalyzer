@@ -10,6 +10,7 @@ using System.Globalization;
 using EnergyAnalyzer.Monitor;
 using EnergyAnalyzer.Helpers;
 using EnergyAnalyzer.Services;
+using EnergyAnalyzer.NET;
 
 IHost host = Host.CreateDefaultBuilder(args)
                  .ConfigureAppConfiguration(ConfigureAppConfiguration)
@@ -36,6 +37,9 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
 {
     //Add Main Application
     services.AddHostedService<Worker>();
+
+    //.NET Wrappers
+    services.AddSingleton<IServiceProviderWrapper, ServiceProviderWrapper>();
 
     //Add Worker Componets
     services.AddSingleton(x => new Parser(ConfigureParser));

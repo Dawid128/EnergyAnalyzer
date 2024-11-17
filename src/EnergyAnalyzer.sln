@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergyAnalyzer", "EnergyAnalyzer\EnergyAnalyzer.csproj", "{FC4A7EBA-918F-404E-A276-22899CC0DDF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnergyAnalyzer", "EnergyAnalyzer\EnergyAnalyzer.csproj", "{FC4A7EBA-918F-404E-A276-22899CC0DDF7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnergyAnalyzer.Test", "EnergyAnalyzer.Test\EnergyAnalyzer.Test.csproj", "{CAC57491-F28E-45EA-BC50-6D13C41DBC42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0A57F3D-4309-44F8-94E8-6B00B2086515}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,10 @@ Global
 		{FC4A7EBA-918F-404E-A276-22899CC0DDF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4A7EBA-918F-404E-A276-22899CC0DDF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC4A7EBA-918F-404E-A276-22899CC0DDF7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC57491-F28E-45EA-BC50-6D13C41DBC42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC57491-F28E-45EA-BC50-6D13C41DBC42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC57491-F28E-45EA-BC50-6D13C41DBC42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC57491-F28E-45EA-BC50-6D13C41DBC42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

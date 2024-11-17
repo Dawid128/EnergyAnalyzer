@@ -1,16 +1,17 @@
 ﻿using EnergyAnalyzer.Models.Options;
+using EnergyAnalyzer.NET;
 using EnergyAnalyzer.OptionsManagers.Interfaces;
 
 namespace EnergyAnalyzer.OptionsManagers.Service
 {
     internal class OptionsManagerService
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IServiceProviderWrapper _serviceProviderWrapper;
         private readonly Dictionary<Type, Type> _mapOptionsManagerTypes;
 
-        public OptionsManagerService(IServiceProvider serviceProvider) 
+        public OptionsManagerService(IServiceProviderWrapper serviceProviderWrapper) 
         {
-            _serviceProvider = serviceProvider;
+            _serviceProviderWrapper = serviceProviderWrapper;
 
             _mapOptionsManagerTypes = GetMapOptionsManagerTypes();
         }
@@ -22,7 +23,7 @@ namespace EnergyAnalyzer.OptionsManagers.Service
             if (!_mapOptionsManagerTypes.TryGetValue(options.GetType(), out var optionsManagerType))
                 throw new KeyNotFoundException($"Not found mapped IOptionsManager, for type {options.GetType().Name}");
 
-            var optionsManager = _serviceProvider.GetRequiredService(optionsManagerType) as IOptionsManager;
+            var optionsManager = _serviceProviderWrapper.GetRequiredService(optionsManagerType) as IOptionsManager;
             if (optionsManager is null)
                 throw new InvalidCastException($"Get Service of type {optionsManagerType.Name} failed");
 
@@ -33,11 +34,8 @@ namespace EnergyAnalyzer.OptionsManagers.Service
         {
             var result = new Dictionary<Type, Type>();
 
-            var allOptionsManagerTypes = GetAllInterfaceTypes<IOptionsManager>();
-            var allOptionsTypes = GetAllInterfaceTypes<IOptions>();
-
-            if (allOptionsManagerTypes.Count != allOptionsTypes.Count)
-                throw new ArgumentOutOfRangeException($"Count of types {nameof(IOptionsManager)} and {nameof(IOptions)} cannot be different");
+            var allOptionsManagerTypes = GetAllInterfaceTypes<IOptionsManager>("EnergyAnalyzer.OptionsManagers.Managers");
+            var allOptionsTypes = GetAllInterfaceTypes<IOptions>("EnergyAnalyzer.Models.Options");
 
             foreach (var optionsType in allOptionsTypes)
             {
@@ -50,12 +48,13 @@ namespace EnergyAnalyzer.OptionsManagers.Service
             return result;
         }
 
-        private List<Type> GetAllInterfaceTypes<T>()
+        private List<Type> GetAllInterfaceTypes<T>(string @namespace)
         {
             var iType = typeof(T);
 
             var allTypes = AppDomain.CurrentDomain.GetAssemblies()
                                                   .SelectMany(s => s.GetTypes())
+                                                  .Where(x => x.Namespace?.Equals(@namespace) is true)
                                                   .Where(w => iType.IsAssignableFrom(w) && w.IsClass)
                                                   .ToList();
 
