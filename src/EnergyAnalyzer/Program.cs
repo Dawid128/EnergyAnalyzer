@@ -11,6 +11,8 @@ using EnergyAnalyzer.Monitor;
 using EnergyAnalyzer.Helpers;
 using EnergyAnalyzer.Services;
 using EnergyAnalyzer.NET;
+using EnergyAnalyzer.DataManagers.CSV;
+using EnergyAnalyzer.Models.DataManagers.CSV;
 
 IHost host = Host.CreateDefaultBuilder(args)
                  .ConfigureAppConfiguration(ConfigureAppConfiguration)
@@ -35,6 +37,13 @@ static void ConfigureLogging(ILoggingBuilder loggingBuilder)
 //Split all add as separate group. 
 static void ConfugureServices(HostBuilderContext builder, IServiceCollection services)
 {
+    //CsvImporter Configuration 
+    services.Configure<CsvImporterOptions>(opts =>
+    {
+        opts.Separator = ';';
+        opts.ParsingCulture = new CultureInfo("pl-pl");
+    });
+
     //Add Main Application
     services.AddHostedService<Worker>();
 
@@ -51,6 +60,7 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
     services.AddSingleton<DeleteOptionsHelper>();
     services.AddTransient<ShowOptionsManager>();
     services.AddTransient<CreateAnalysisOptionsManager>();
+    services.AddTransient<ImportOptionsManager>();
 
     //Add Analysis Services
     services.AddSingleton<DailyEnergyConsumptions>();
@@ -59,6 +69,7 @@ static void ConfugureServices(HostBuilderContext builder, IServiceCollection ser
     services.AddSingleton<IWriter, DatabaseWriter>();
     services.AddSingleton<IDeleter, DatabaseDeleter>();
     services.AddSingleton<IReader, DatabaseReader>();
+    services.AddSingleton<IImporter, CsvImporter>();
 
     //Add Database Context
     services.AddTransient<DatabaseContext>();

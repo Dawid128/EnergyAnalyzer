@@ -1,4 +1,5 @@
 ﻿using EnergyAnalyzer.Extensions;
+using EnergyAnalyzer.Models.Attributes;
 using EnergyAnalyzer.Models.Data;
 using Spectre.Console;
 
@@ -10,7 +11,7 @@ namespace EnergyAnalyzer.Handlers
         {
             var table = new Table();
 
-            var properties = ItemExtensions.GetProperties<T>();
+            var properties = ItemExtensions.GetProperties<T, ItemPropertyAttribute>().Select(x => x.PropertyInfo).ToList();
 
             foreach (var (columnName, _) in columns)
                 table.AddColumn(columnName);
